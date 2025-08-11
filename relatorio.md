@@ -1,186 +1,148 @@
 <sup>Esse é um feedback gerado por IA, ele pode conter erros.</sup>
 
-Você tem 9 créditos restantes para usar o sistema de feedback AI.
+Você tem 8 créditos restantes para usar o sistema de feedback AI.
 
 # Feedback para arturbomtempo-dev:
 
 Nota final: **100.0/100**
 
-# Feedback para arturbomtempo-dev 🚓✨
+# Feedback para arturbomtempo-dev 🚓🚀
 
-Olá, artur! Primeiro, deixa eu te parabenizar pelo seu esforço e pela entrega impecável da parte principal do desafio! 🎉 Você conseguiu implementar toda a persistência de dados com PostgreSQL e Knex.js, mantendo a arquitetura modular, com rotas, controllers e repositories muito bem organizados. Isso é um baita mérito! 👏
-
-Além disso, você foi além dos requisitos básicos, entregando funcionalidades bônus importantes, como:
-
-- Filtro simples por status e agente nos casos.
-- Implementação da busca de casos por palavras-chave no título e descrição.
-- Endpoint para buscar o agente responsável por um caso.
-- Filtragem de agentes por data de incorporação com ordenação crescente e decrescente.
-- Mensagens de erro customizadas para parâmetros inválidos.
-
-Esses extras mostram que você está mergulhando fundo no projeto e buscando entregar valor real! 🚀
+Olá, Artur! Antes de tudo, parabéns pelo empenho e pela entrega caprichada! 🎉 Você atingiu a nota máxima no requisito obrigatório e ainda conquistou bônus importantes, como a filtragem por status e agente nos casos — isso mostra que você foi além do esperado, e isso é incrível! 👏👏
 
 ---
 
-## Análise Detalhada e Pontos de Atenção 🕵️‍♂️
+## 🌟 O que você mandou muito bem
 
-### 1. Estrutura de Diretórios e Arquivos
-
-Sua estrutura geral está bem próxima do esperado, o que é ótimo! Porém, percebi um detalhe que pode causar confusão e até problemas futuros:
-
-- O arquivo de migration está nomeado como `20250811021528_solution_migrations.js.js` (com dupla extensão `.js.js`):
-
-```bash
-db/
-└── migrations/
-    └── 20250811021528_solution_migrations.js.js
-```
-
-Isso pode impedir que o Knex reconheça e execute corretamente essa migration. O nome correto deveria ser, por exemplo:
-
-```
-20250811021528_solution_migrations.js
-```
-
-**Por quê isso é importante?**  
-O Knex depende da extensão `.js` para identificar os arquivos de migration. Se o arquivo estiver com dupla extensão, ele pode ser ignorado, e suas tabelas não serão criadas no banco, o que quebra toda a persistência.
-
-👉 **Correção rápida:** Renomeie o arquivo para remover o `.js` duplicado.
+- **Estrutura modular**: Seu projeto está muito bem organizado, com pastas separadas para controllers, repositories, routes, db, utils, etc. Isso facilita a manutenção e escalabilidade do código.
+- **Conexão com o banco de dados**: O arquivo `db/db.js` está configurado corretamente para usar o Knex com o ambiente definido no `.env`. Isso é fundamental para garantir que as queries funcionem.
+- **Migrations e Seeds**: Você criou as migrations para as tabelas `agentes` e `casos` com os campos corretos, incluindo a chave estrangeira com `onDelete('CASCADE')`. Além disso, os seeds estão inserindo dados iniciais coerentes, o que ajuda muito nos testes e no desenvolvimento.
+- **Endpoints REST completos**: Todos os métodos HTTP foram implementados para agentes e casos, incluindo validações, tratamento de erros e retorno dos status codes corretos (200, 201, 204, 400, 404).
+- **Validação e tratamento de erros**: A utilização do `AppError` para lançar erros customizados e o middleware de erro centralizado garantem uma API robusta e amigável para o consumidor.
+- **Filtros de busca e ordenação**: Você implementou filtros por cargo e ordenação por data de incorporação para agentes, além de filtros por status e agente nos casos. Isso mostra uma boa atenção aos detalhes e usabilidade da API.
 
 ---
 
-### 2. Configuração do Banco de Dados e Conexão
+## 🔍 Pontos para atenção e melhorias
 
-Seu `knexfile.js` e `db/db.js` estão configurados corretamente para usar variáveis de ambiente e o Knex. Isso é excelente!
+### 1. Enum `status` inconsistente entre Migration e Schemas OpenAPI
 
-```js
-// knexfile.js
-development: {
-    client: 'pg',
-    connection: {
-        host: '127.0.0.1',
-        port: 5432,
-        user: process.env.POSTGRES_USER,
-        password: process.env.POSTGRES_PASSWORD,
-        database: process.env.POSTGRES_DB,
-    },
-    migrations: { directory: './db/migrations' },
-    seeds: { directory: './db/seeds' },
-},
-```
+Na migration do banco, você definiu o campo `status` da tabela `casos` como um enum com os valores:
 
 ```js
-// db/db.js
-const knexConfig = require('../knexfile');
-const knex = require('knex');
-
-const nodeEnv = process.env.NODE_ENV || 'development';
-const config = knexConfig[nodeEnv];
-
-const db = knex(config);
-
-module.exports = db;
+table.enum('status', ['aberto', 'solucionado']);
 ```
 
-**Dica importante:** Certifique-se de que seu `.env` está devidamente configurado com as variáveis `POSTGRES_USER`, `POSTGRES_PASSWORD` e `POSTGRES_DB`. Se essas estiverem faltando ou incorretas, a conexão com o banco falhará silenciosamente e suas queries não funcionarão.
+Porém, no seu arquivo de rotas (`casosRoutes.js`), no esquema OpenAPI, o enum está definido como:
 
-Se você estiver usando Docker, vale a pena revisar seu `docker-compose.yml` para garantir que o container do Postgres esteja rodando e exposto corretamente.
+```yaml
+status:
+  type: string
+  enum: ["aberto", "fechado"]
+  example: "aberto"
+```
 
-Se tiver dúvidas nessa configuração, recomendo fortemente este vídeo que explica passo a passo como configurar PostgreSQL com Docker e conectar ao Node.js:  
-[Configuração de Banco de Dados com Docker e Knex](http://googleusercontent.com/youtube.com/docker-postgresql-node)
+Ou seja, no banco você aceita `'solucionado'`, mas na documentação e validação você usa `'fechado'`. Isso pode gerar erros ao tentar criar ou atualizar casos com o status `'fechado'`, pois o banco rejeitará por não ser um valor válido.
+
+**Como corrigir?**
+
+Alinhe os valores do enum entre migration, validação e documentação. Por exemplo, altere a migration para:
+
+```js
+table.enum('status', ['aberto', 'fechado']);
+```
+
+Ou altere a documentação para `'solucionado'` em vez de `'fechado'`. O importante é que todos estejam sincronizados.
 
 ---
 
-### 3. Migrations e Seeds
+### 2. Validação de IDs e tratamento de erros com status 400
 
-Você criou as migrations e seeds para as tabelas `agentes` e `casos` de forma correta, incluindo as referências entre elas:
+Notei que, em alguns controllers, a validação do parâmetro `id` para verificar se ele é um número inteiro válido está ausente ou confusa.
 
-```js
-// migrations
-await knex.schema.createTable('agentes', function (table) {
-    table.increments('id').primary();
-    table.string('nome').notNullable();
-    table.date('dataDeIncorporacao').notNullable();
-    table.string('cargo').notNullable();
-});
-
-await knex.schema.createTable('casos', function (table) {
-    table.increments('id').primary();
-    table.string('titulo').notNullable();
-    table.text('descricao').notNullable();
-    table.enum('status', ['aberto', 'solucionado']);
-    table
-        .integer('agente_id')
-        .references('id')
-        .inTable('agentes')
-        .notNullable()
-        .onDelete('CASCADE');
-});
-```
-
-Só fique atento à extensão do arquivo da migration, como falei antes, para garantir que ela seja executada.
-
-Os seeds também estão bem estruturados, populando dados iniciais relevantes.
-
-Se quiser entender melhor como criar e executar migrations e seeds, veja a documentação oficial do Knex:  
-https://knexjs.org/guide/migrations.html  
-http://googleusercontent.com/youtube.com/knex-seeds
-
----
-
-### 4. Endpoints e Controllers
-
-Você estruturou os controllers muito bem, com tratamento claro de erros e uso consistente do `AppError`. Isso ajuda muito na manutenção e clareza do código.
-
-Um ponto que observei, que pode estar impactando os testes bônus que falharam, está relacionado à validação dos parâmetros de rota e query.
-
-Por exemplo, no controller de casos:
+Por exemplo, em `casosController.js` no método `getCasosById` você faz:
 
 ```js
-async function getCasosById(req, res) {
-    const id = Number(req.params.id);
-    if (!id || !Number.isInteger(id)) {
-        throw new AppError(404, 'Id inválido');
-    }
-    const caso = await casosRepository.findById(id);
-    if (!caso) {
-        throw new AppError(404, 'Nenhum caso encontrado para o id especificado');
-    }
-    res.json(caso);
+const id = Number(req.params.id);
+if (!id || !Number.isInteger(id)) {
+    throw new AppError(404, 'Id inválido');
 }
 ```
 
-Aqui, o erro que você lança quando o `id` é inválido deveria ser um 400 (Bad Request), pois o parâmetro está mal formatado, não é um recurso inexistente. O código 404 é para quando o recurso não é encontrado.
+Aqui, o código lança erro 404 para um ID inválido (ex: uma string que não é número). O status correto para esse tipo de erro é **400 (Bad Request)**, pois o recurso não foi encontrado (404) só se aplica a IDs válidos que não existem.
 
-O mesmo vale para outros endpoints que validam parâmetros. Isso é importante para seguir os padrões HTTP e facilitar o entendimento do cliente da API.
+Além disso, o teste `!id` falha para o id = 0 (que não deve ser válido), mas o ideal é usar `Number.isInteger(id) && id > 0` para validar IDs positivos.
 
-👉 **Sugestão:** Ajuste o status code para 400 em casos de parâmetros inválidos, e 404 apenas quando o recurso não existir.
-
----
-
-### 5. Validação dos Dados e Tratamento de Erros
-
-Você usou middlewares de validação com `zod` (pelo que vi nas rotas), e o tratamento de erros centralizado com `AppError` está excelente. Isso garante respostas consistentes e claras para o cliente.
-
-No entanto, os testes bônus indicam que as mensagens customizadas para argumentos inválidos podem não estar 100% alinhadas com o esperado.
-
-Por exemplo, no trecho do controller:
+**Sugestão para validação correta:**
 
 ```js
-if (!agente) {
-    throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+const id = Number(req.params.id);
+if (!Number.isInteger(id) || id <= 0) {
+    throw new AppError(400, 'Parâmetro "id" deve ser um inteiro positivo válido');
 }
 ```
 
-Seria interessante garantir que a mensagem e o formato do array `errors` estejam sempre presentes, mesmo que vazio, para manter a consistência da API.
+E use status 400 para erros de parâmetro inválido, e 404 para recurso inexistente.
 
 ---
 
-### 6. Filtro por Data de Incorporação com Ordenação
+### 3. Endpoint de busca do agente responsável por caso (`/casos/:caso_id/agente`) não está passando nos testes bônus
 
-Você implementou o filtro por `cargo` e ordenação por `dataDeIncorporacao` no repositório de agentes, mas os testes bônus indicam que a ordenação ascendente e descendente não funcionaram.
+No seu controller `getAgenteByCasoId`, a lógica está correta, mas a rota no arquivo `casosRoutes.js` está definida assim:
 
-No controller de agentes:
+```js
+router.get('/casos/:caso_id/agente', casosController.getAgenteByCasoId);
+```
+
+O problema aqui pode estar relacionado à validação do parâmetro `caso_id`, que não está explicitamente validada para garantir que seja um inteiro positivo antes de consultar o banco. Isso pode levar a erros silenciosos ou retornos inesperados.
+
+Também vale revisar se o retorno está no formato esperado (array ou objeto). No OpenAPI, o schema indica que o retorno é um array, mas no controller você retorna um objeto JSON direto:
+
+```js
+res.status(200).json(agente);
+```
+
+Se a documentação espera um array, talvez seja necessário ajustar para:
+
+```js
+res.status(200).json([agente]);
+```
+
+Ou ajustar a documentação para refletir o objeto retornado.
+
+---
+
+### 4. Endpoint de filtragem por keywords em título e descrição (`/casos/search`)
+
+Você implementou a filtragem usando:
+
+```js
+const result = await db('casos')
+    .select('*')
+    .where('titulo', 'ilike', `%${term}%`)
+    .orWhere('descricao', 'ilike', `%${term}%`);
+```
+
+Isso está correto, mas pode haver um detalhe importante: o uso do `.where(...).orWhere(...)` sem agrupar as condições pode causar resultados inesperados quando houver outros filtros encadeados.
+
+Para garantir que o filtro seja aplicado corretamente, você pode agrupar as condições usando `.where(function() { ... })`:
+
+```js
+const result = await db('casos')
+    .select('*')
+    .where(function() {
+        this.where('titulo', 'ilike', `%${term}%`)
+            .orWhere('descricao', 'ilike', `%${term}%`);
+    });
+```
+
+Isso evita que o `orWhere` afete outras cláusulas `where` que possam existir.
+
+---
+
+### 5. Ordenação por `dataDeIncorporacao` para agentes
+
+No controller `getAllAgentes`, você tem:
 
 ```js
 const orderByMapping = {
@@ -190,68 +152,55 @@ const orderByMapping = {
 let orderBy = orderByMapping[sort];
 ```
 
-Aqui, se `sort` não for um dos valores do mapeamento, `orderBy` será `undefined`, e isso pode quebrar a query.
+E passa `orderBy` para o repository. Porém, se `sort` for um valor diferente, `orderBy` será `undefined`, e no repository você usa:
 
-👉 **Sugestão:** Sempre defina um valor padrão para `orderBy`, por exemplo:
+```js
+.orderBy(orderBy[0], orderBy[1]);
+```
+
+Isso pode gerar erro se `orderBy` for `undefined`.
+
+**Sugestão:**
+
+Defina um valor padrão para `orderBy` caso o parâmetro `sort` seja inválido ou ausente:
 
 ```js
 let orderBy = orderByMapping[sort] || ['id', 'asc'];
 ```
 
-Assim, evita erros e garante ordenação padrão.
+Assim, evita erros e mantém a ordenação padrão.
 
 ---
 
-### 7. Enum `status` nos Casos
+## 📚 Recursos para você aprofundar e aprimorar ainda mais
 
-No seu migration, você definiu o enum `status` com valores `['aberto', 'solucionado']`, mas no schema do Swagger e no código do repositório, há menção a `"fechado"` também:
-
-```yaml
-status:
-  type: string
-  enum: ["aberto", "fechado"]
-  example: "aberto"
-```
-
-**Isso pode causar inconsistência!**
-
-Se o banco só aceita `'aberto'` e `'solucionado'`, mas a documentação e validação aceitam `'fechado'`, pode haver erros ao inserir ou atualizar registros.
-
-👉 **Sugestão:** Harmonize o enum entre migration, validações, documentação e código para usar os mesmos valores.
+- Para garantir uma conexão sólida e correta com o banco PostgreSQL usando Docker e Knex, recomendo este vídeo:  
+  http://googleusercontent.com/youtube.com/docker-postgresql-node  
+- Para entender melhor como funcionam as migrations e versionamento de banco com Knex:  
+  https://knexjs.org/guide/migrations.html  
+- Se quiser explorar mais sobre o Query Builder do Knex e evitar erros nas queries:  
+  https://knexjs.org/guide/query-builder.html  
+- Para aprimorar a validação de dados e tratamento de erros HTTP na sua API:  
+  https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_  
+- Para entender profundamente os status codes HTTP e como usá-los corretamente:  
+  https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/400  
+  https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/404  
 
 ---
 
-## Recursos para você aprofundar e corrigir esses pontos:
+## 🗺️ Resumo rápido dos pontos para focar:
 
-- [Knex Migrations e Seeds (documentação oficial)](https://knexjs.org/guide/migrations.html)  
-- [Knex Query Builder – Guia Completo](https://knexjs.org/guide/query-builder.html)  
-- [Validação e Tratamento de Erros em APIs Node.js](https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_)  
-- [HTTP Status Codes: 400 vs 404](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/400) e (https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/404)  
-- [Configuração de Banco de Dados com Docker e Node.js](http://googleusercontent.com/youtube.com/docker-postgresql-node)  
-- [Arquitetura MVC em Node.js](https://youtu.be/bGN_xNc4A1k?si=Nj38J_8RpgsdQ-QH)  
-
----
-
-## Resumo dos Pontos para Melhorar 📋
-
-- ⚠️ **Corrigir extensão do arquivo de migration** para `.js` simples (sem `.js.js`).  
-- ⚠️ **Revisar e garantir que o `.env` está configurado corretamente** para conectar ao PostgreSQL.  
-- ⚠️ **Ajustar status codes HTTP**: usar 400 para parâmetros inválidos e 404 para recursos não encontrados.  
-- ⚠️ **Garantir mensagens de erro consistentes e formato correto** (incluindo array `errors`).  
-- ⚠️ **Tratar ordenação no filtro de agentes para evitar valores `undefined` em `orderBy`**.  
-- ⚠️ **Harmonizar enum `status` entre migration, documentação e validações** para evitar inconsistência.  
+- ⚠️ **Alinhar os valores do enum `status` entre migration e documentação** para evitar inconsistências.
+- ⚠️ **Validar IDs corretamente** (inteiros positivos) e usar status 400 para parâmetros inválidos.
+- ⚠️ **Ajustar o retorno do endpoint `/casos/:caso_id/agente`** para bater com a documentação (array ou objeto).
+- ⚠️ **Agrupar condições `where` e `orWhere` na filtragem por keywords** para evitar resultados errados.
+- ⚠️ **Garantir valor padrão para ordenação** no endpoint de agentes para evitar erros quando `sort` for inválido.
 
 ---
 
-## Considerações Finais 🌟
+Artur, você está no caminho certo e sua entrega mostra muita dedicação e domínio dos conceitos! 🚀 Continue praticando esses detalhes e logo seu código estará ainda mais robusto, limpo e alinhado com as melhores práticas. Qualquer dúvida, estou aqui para ajudar! 😉
 
-artur, você fez um trabalho muito sólido e estruturado! Seu código está limpo, organizado e com boas práticas de modularização. Os pontos que destaquei são detalhes que, uma vez corrigidos, vão elevar ainda mais a qualidade da sua API e a experiência do cliente que a consome.
-
-Continue assim, explorando os bônus e buscando sempre a excelência! Se precisar de ajuda para entender melhor alguma parte da configuração do banco, das migrations ou do tratamento de erros, os links que te passei vão ser ótimos companheiros nessa jornada.
-
-Parabéns pela dedicação e força na caminhada! 🚀👊
-
-Um abraço do seu Code Buddy! 🤖💙
+Abraços e sucesso! 👊✨
 
 > Caso queira tirar uma dúvida específica, entre em contato com o Chapter no nosso [discord](https://discord.gg/DryuHVnz).
 
