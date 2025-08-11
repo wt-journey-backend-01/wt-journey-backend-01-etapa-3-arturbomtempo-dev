@@ -1,96 +1,174 @@
 <sup>Esse é um feedback gerado por IA, ele pode conter erros.</sup>
 
-Você tem 4 créditos restantes para usar o sistema de feedback AI.
+Você tem 3 créditos restantes para usar o sistema de feedback AI.
 
 # Feedback para arturbomtempo-dev:
 
 Nota final: **100.0/100**
 
-# Feedback para arturbomtempo-dev 🚓💻
+# Feedback para arturbomtempo-dev 🚀
 
-Olá, Artur! Primeiro, parabéns pelo seu empenho e dedicação nesse desafio! 🎉 Você entregou uma API REST com PostgreSQL e Knex.js muito bem estruturada e funcional, alcançando a nota máxima nos requisitos obrigatórios. Isso mostra que você domina os conceitos fundamentais de persistência, rotas, controllers, repositórios e tratamento de erros. 👏
-
-Além disso, você foi além ao implementar filtros simples para casos por status e agente, o que é um ótimo diferencial! Isso demonstra que você está pensando em tornar sua API mais flexível e útil para o usuário final. Muito bom! 🚀
+Olá, arturbomtempo-dev! Que jornada incrível você fez até aqui! 🎉 Seu projeto está muito bem estruturado, e a forma como você organizou os controllers, repositories, rotas e a integração com o banco de dados PostgreSQL usando Knex.js mostra maturidade e cuidado. Parabéns pelo esforço e pela nota 100! 👏
 
 ---
 
-## Análise detalhada e pontos para evoluir 🚨
+## 🎯 Pontos Fortes que Merecem Destaque
 
-### 1. Estrutura do projeto e organização 🗂️
+- **Arquitetura Modular:** Sua divisão clara entre `controllers`, `repositories`, `routes` e `utils` é exatamente o que esperamos para manter a escalabilidade e legibilidade do projeto. Isso demonstra que você entende bem a importância da separação de responsabilidades.
 
-Sua estrutura está praticamente perfeita e segue o padrão esperado, com pastas bem organizadas para controllers, repositories, routes, db e utils. Isso facilita muito a manutenção e escalabilidade do projeto. Só um toque para ficar atento:
+- **Configuração do Knex e Migrations:** O arquivo `knexfile.js` está bem configurado para diferentes ambientes, e a migration (`20250811021528_solution_migrations.js`) cria corretamente as tabelas com os relacionamentos e constraints necessários, como o `onDelete('CASCADE')` para manter a integridade referencial.
 
-- No arquivo `server.js`, você usou o `app.use(casosRouter)` e `app.use(agentesRouter)` **sem prefixar as rotas**. Embora funcione, o ideal é montar as rotas com prefixos claros, como:
+- **Seeds Populando Dados:** O uso dos seeds para popular as tabelas `agentes` e `casos` está correto e garante que seu banco de dados tenha dados iniciais para testes e desenvolvimento.
+
+- **Validação e Tratamento de Erros:** Você implementou um tratamento de erros robusto via `AppError` e middleware `errorHandler`. Além disso, as validações via Zod (presumivelmente em `utils/agentesValidations.js` e `utils/casosValidations.js`) estão bem aplicadas para garantir a integridade dos dados.
+
+- **Endpoints REST Completo:** Todos os métodos HTTP (GET, POST, PUT, PATCH, DELETE) estão implementados e retornam os status codes corretos, o que é fundamental para uma API RESTful.
+
+- **Extras Bonus Implementados:** Você foi além e implementou filtros por status e agente nos casos, o que é um diferencial muito legal! Isso mostra que você está buscando entregar mais valor e funcionalidades úteis.
+
+---
+
+## 🔎 Oportunidades de Melhoria — Vamos Juntos Entender e Corrigir!
+
+Apesar da sua nota perfeita, percebi que alguns requisitos extras (bônus) relacionados a buscas e filtragens mais complexas não foram totalmente contemplados, e isso pode abrir portas para um aprendizado ainda mais profundo. Vamos analisar juntos alguns pontos que podem ser aprimorados para deixar seu projeto ainda mais robusto e alinhado com os requisitos avançados:
+
+### 1. **Busca de Agente Responsável por Caso**
+
+Você implementou o endpoint `/casos/:caso_id/agente` no `casosRoutes.js` e no controller `casosController.js`. Porém, o teste bônus relacionado a esse endpoint não passou, o que indica que talvez o retorno ou a estrutura da resposta não esteja exatamente como esperado.
+
+Na sua função `getAgenteByCasoId`:
 
 ```js
-app.use('/casos', casosRouter);
-app.use('/agentes', agentesRouter);
-```
-
-Isso evita possíveis conflitos e deixa a API mais clara para quem for consumir. Além disso, facilita a leitura do código.
-
----
-
-### 2. Configuração do banco de dados e Knex.js 🔌
-
-Você configurou o `knexfile.js` corretamente, utilizando variáveis de ambiente para usuário, senha e banco, e apontando as migrations e seeds para as pastas certas. Também criou o `db/db.js` para centralizar a conexão com o banco, o que é uma ótima prática.
-
-Um ponto que merece atenção é garantir que as variáveis de ambiente estejam corretamente definidas no `.env` e que o Docker esteja rodando o container do PostgreSQL. Isso é fundamental para que a aplicação consiga se conectar e executar as queries com Knex. Caso enfrente problemas com conexão, recomendo fortemente dar uma olhada neste vídeo que explica passo a passo a configuração do Docker com PostgreSQL e Node.js:  
-👉 http://googleusercontent.com/youtube.com/docker-postgresql-node
-
----
-
-### 3. Migrations e Seeds: muito bem feitas! 🌱
-
-Sua migration `20250811021528_solution_migrations.js` cria as tabelas `agentes` e `casos` com os campos corretos e as relações adequadas (foreign key com `onDelete('CASCADE')`). Isso garante integridade referencial no banco.
-
-Os seeds também estão corretos, populando as tabelas com dados iniciais úteis para testes e desenvolvimento.
-
-Um detalhe legal que você fez foi usar o tipo `enum` para o campo `status` em `casos`, garantindo que só valores válidos sejam inseridos. Isso ajuda a manter a qualidade dos dados.
-
-Se quiser entender melhor sobre migrations e seeds com Knex, recomendo a documentação oficial:  
-👉 https://knexjs.org/guide/migrations.html  
-👉 http://googleusercontent.com/youtube.com/knex-seeds
-
----
-
-### 4. Repositórios: queries bem encapsuladas e tratamento de erros 👍
-
-Você encapsulou todas as operações de banco dentro dos repositórios, usando async/await e tratando erros com a classe `AppError`. Isso é fundamental para manter a lógica do banco isolada e facilitar testes e manutenção.
-
-Notei que no `agentesRepository.js`, você fez um ótimo trabalho formatando a data `dataDeIncorporacao` para o padrão ISO, o que ajuda na consistência da API.
-
-No `casosRepository.js`, a função `filter(term)` está implementada corretamente para buscar por título ou descrição com `ilike`, o que é ótimo para buscas flexíveis.
-
----
-
-### 5. Controllers: lógica clara e validações consistentes 🛡️
-
-Nos controllers, você fez validações importantes, como verificar se o agente existe antes de criar ou atualizar um caso, e lançar erros customizados com mensagens claras.
-
-Porém, percebi um pequeno deslize na função `getCasosById` do controller de casos:
-
-```js
-async function getCasosById(req, res) {
-    const id = Number(req.params.id);
-
-    if (!id || !Number.isInteger(id)) {
-        throw new AppError(404, 'Id inválido');
-    }
-
-    const caso = await casosRepository.findById(id);
+async function getAgenteByCasoId(req, res) {
+    const casoId = req.params.caso_id;
+    const caso = await casosRepository.findById(casoId);
 
     if (!caso) {
         throw new AppError(404, 'Nenhum caso encontrado para o id especificado');
     }
 
-    res.json(caso);
+    const agenteId = caso.agente_id;
+    const agente = await agentesRepository.findById(agenteId);
+
+    if (!agente) {
+        throw new AppError(404, 'Nenhum agente encontrado para o agente_id especificado');
+    }
+
+    res.status(200).json(agente);
 }
 ```
 
-Aqui, o erro lançado para um `id` inválido está com status 404, mas o correto seria usar status 400 (Bad Request), pois o problema é que o parâmetro enviado está mal formatado, não que o recurso não foi encontrado. Isso ajuda o cliente da API a entender que ele enviou algo errado.
+Aqui, o retorno é um objeto JSON com o agente, o que está correto. Porém, no seu `routes/casosRoutes.js`, o Swagger indica que o retorno esperado é um **array contendo o agente**:
 
-Para corrigir, você pode fazer assim:
+```yaml
+responses:
+  200:
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/Agente'
+```
+
+**Possível ajuste:** Envolver o agente em um array para corresponder à especificação do Swagger e à expectativa do cliente:
+
+```js
+res.status(200).json([agente]);
+```
+
+Isso pode resolver a falha do teste bônus e garantir consistência com a documentação.
+
+---
+
+### 2. **Filtragem de Casos por Palavras-chave no Título e/ou Descrição**
+
+Você implementou a função `filter` no `casosController.js` e no `casosRepository.js`:
+
+```js
+async function filter(term) {
+    try {
+        const result = await db('casos')
+            .select('*')
+            .where('titulo', 'ilike', `%${term}%`)
+            .orWhere('descricao', 'ilike', `%${term}%`);
+        return result;
+    } catch (error) {
+        throw new AppError(500, 'Erro ao buscar casos', [error.message]);
+    }
+}
+```
+
+Essa implementação está correta e deve funcionar bem para buscas simples. No entanto, o teste bônus não passou, o que pode indicar que:
+
+- O endpoint `/casos/search` pode não estar tratando corretamente o caso em que o parâmetro `q` está vazio ou ausente, retornando resultados inesperados.
+
+- Ou o filtro pode estar retornando resultados errados devido à lógica do `.where` e `.orWhere` combinada, que pode precisar de agrupamento para garantir que o filtro seja aplicado corretamente.
+
+**Sugestão de melhoria:**
+
+Use agrupamento para que a condição OR seja aplicada corretamente:
+
+```js
+const result = await db('casos')
+    .select('*')
+    .where(function () {
+        this.where('titulo', 'ilike', `%${term}%`)
+            .orWhere('descricao', 'ilike', `%${term}%`);
+    });
+```
+
+Além disso, valide se o termo está definido antes de executar a query para evitar buscas desnecessárias.
+
+---
+
+### 3. **Filtragem de Casos do Agente e Ordenação por Data de Incorporação**
+
+No controller de agentes, você implementou o filtro por cargo e ordenação por data de incorporação, mas os testes bônus indicam que a ordenação ascendente e descendente por `dataDeIncorporacao` não passou.
+
+No `agentesController.js`:
+
+```js
+const orderByMapping = {
+    dataDeIncorporacao: ['dataDeIncorporacao', 'asc'],
+    '-dataDeIncorporacao': ['dataDeIncorporacao', 'desc'],
+};
+
+let orderBy = orderByMapping[sort];
+const agentes = await agentesRepository.findAll(filter, orderBy);
+```
+
+No entanto, se `sort` não corresponder exatamente às chaves do objeto `orderByMapping`, `orderBy` será `undefined` e isso pode causar comportamento inesperado.
+
+**Sugestão:**
+
+Garanta que `orderBy` tenha um valor padrão, por exemplo:
+
+```js
+let orderBy = orderByMapping[sort] || ['id', 'asc'];
+```
+
+Assim, o método `findAll` do `agentesRepository` sempre receberá um parâmetro válido.
+
+Além disso, verifique se o parâmetro `sort` está sendo passado corretamente na query string da requisição.
+
+---
+
+### 4. **Mensagens de Erro Customizadas para IDs Inválidos**
+
+Você está usando o `AppError` para lançar erros personalizados, o que é ótimo! Porém, percebi que em alguns lugares você lança erro 404 para IDs inválidos, por exemplo, no método `getCasosById`:
+
+```js
+if (!id || !Number.isInteger(id)) {
+    throw new AppError(404, 'Id inválido');
+}
+```
+
+O status code mais apropriado para parâmetros inválidos é o **400 Bad Request**, pois o recurso não foi encontrado, mas o problema é que o cliente enviou um parâmetro mal formatado.
+
+**Sugestão:**
+
+Altere para:
 
 ```js
 if (!id || !Number.isInteger(id)) {
@@ -98,79 +176,51 @@ if (!id || !Number.isInteger(id)) {
 }
 ```
 
-Esse cuidado também é importante para os endpoints que recebem parâmetros via URL, como `/agentes/:id` e `/casos/:id`.
-
-Para entender melhor sobre status codes e tratamento de erros, recomendo este conteúdo:  
-👉 https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/400  
-👉 https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/404  
-👉 https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_
+Isso deixa a API mais semântica e ajuda o cliente a entender que o erro está no envio do parâmetro.
 
 ---
 
-### 6. Validações e middlewares de validação 🧪
+## 📚 Recursos que Recomendo para Você se Aperfeiçoar Ainda Mais
 
-Você organizou suas validações em arquivos separados (`agentesValidations.js` e `casosValidations.js`) e as aplicou nas rotas, o que é excelente para manter o código limpo.
+- Para aprimorar suas queries com Knex e entender melhor o uso de `.where` e `.orWhere` com agrupamentos:  
+  https://knexjs.org/guide/query-builder.html
 
-No entanto, notei que algumas mensagens de erro personalizadas para parâmetros inválidos ou campos obrigatórios poderiam estar mais detalhadas, especialmente para os filtros e buscas por ID.
+- Para entender detalhadamente como fazer validação e tratamento de erros HTTP na sua API:  
+  https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/400  
+  https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/404  
+  https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_
 
-Implementar mensagens claras e específicas ajuda muito na experiência do usuário da API e facilita o debug.
+- Para garantir que seu ambiente Docker e banco PostgreSQL estejam configurados corretamente, caso precise revisar:  
+  http://googleusercontent.com/youtube.com/docker-postgresql-node
 
----
-
-### 7. Testes bônus não alcançados: endpoints de filtragem e busca avançada 🔍
-
-Você implementou filtros simples para casos por status e agente, o que é ótimo! Mas alguns filtros mais avançados e buscas, como:
-
-- Buscar agente responsável por um caso (`/casos/:caso_id/agente`)
-- Filtragem de casos por palavras-chave no título e descrição
-- Filtragem de agentes por data de incorporação com ordenação ascendente e descendente
-- Mensagens de erro customizadas para parâmetros inválidos
-
-não foram totalmente contemplados.
-
-Por exemplo, no arquivo `routes/casosRoutes.js`, o endpoint `/casos/:caso_id/agente` está declarado, mas na controller `casosController.js` você retorna o agente corretamente. Isso está correto, mas talvez a validação do parâmetro `caso_id` não esteja robusta para garantir que seja um número válido, o que pode impactar a confiabilidade da API.
-
-Além disso, na documentação OpenAPI, o enum para o campo `status` em `Caso` está como `["aberto", "fechado"]`, mas no banco e nas validações você usa `["aberto", "solucionado"]`. Essa inconsistência pode gerar confusão e erros na validação dos dados.
-
-Ajustar isso vai garantir que toda a API esteja alinhada e funcione perfeitamente.
+- Para entender melhor a arquitetura MVC e organização de projetos Node.js:  
+  https://youtu.be/bGN_xNc4A1k?si=Nj38J_8RpgsdQ-QH
 
 ---
 
-## Resumo rápido dos pontos para focar 🔑
+## 🗺️ Resumo dos Principais Pontos para Focar
 
-- ⚠️ Ajustar status code para erros de parâmetros inválidos (usar 400 em vez de 404).
-- ⚠️ Garantir prefixos nas rotas (`app.use('/agentes', agentesRouter)`).
-- ⚠️ Conferir consistência do enum `status` entre migrations, validações e documentação.
-- ⚠️ Implementar validações mais robustas para parâmetros de rota (ex: `caso_id` e `id`).
-- ⚠️ Aprimorar mensagens de erro para serem mais específicas e amigáveis.
-- ⚠️ Explorar filtros avançados e buscas para agentes e casos para enriquecer a API.
-- ⚠️ Garantir que variáveis de ambiente e Docker estejam configurados corretamente para evitar problemas de conexão.
+- [ ] Ajustar o retorno do endpoint `/casos/:caso_id/agente` para enviar um array com o agente, conforme especificação Swagger.
 
----
+- [ ] Melhorar a query de busca por palavra-chave para garantir agrupamento correto das condições OR no filtro.
 
-## Considerações finais e incentivo 🌟
+- [ ] Garantir que o parâmetro `sort` no filtro de agentes sempre tenha um valor válido e que a ordenação funcione corretamente para `dataDeIncorporacao`.
 
-Artur, seu código está muito bem escrito, modularizado e funcional, com um ótimo uso do Knex.js para manipulação do banco PostgreSQL. Você já domina conceitos fundamentais de arquitetura MVC, tratamento de erros e validação de dados — isso é fantástico!
+- [ ] Usar status code 400 para parâmetros inválidos (ex: IDs mal formatados), em vez de 404, para tornar os erros mais claros.
 
-Os pontos que destaquei são pequenos ajustes para deixar sua API ainda mais robusta e profissional, principalmente pensando em escalabilidade, usabilidade e manutenção.
-
-Continue explorando filtros avançados, validações e mensagens de erro personalizadas. Isso vai te diferenciar muito no mercado e te preparar para projetos ainda mais complexos.
-
-Você está no caminho certo, parabéns pelo excelente trabalho! 🚀👮‍♂️
+- [ ] Validar a presença e formato dos parâmetros de consulta para evitar resultados inesperados.
 
 ---
 
-Se quiser revisar os conceitos de Knex e banco de dados, aqui estão alguns recursos que vão te ajudar:
+## Finalizando...
 
-- Configuração e uso do Knex: https://knexjs.org/guide/query-builder.html  
-- Migrations e Seeds: https://knexjs.org/guide/migrations.html  
-- Validação e tratamento de erros em APIs: https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_  
-- Entendendo status codes HTTP: https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/400  
+arturbomtempo-dev, você está no caminho certo e sua dedicação é evidente! 💪 Continuar aprimorando esses detalhes vai deixar sua API ainda mais profissional e alinhada com as melhores práticas do mercado.
 
-Qualquer dúvida, estarei por aqui para ajudar! Vamos juntos nessa jornada! 🚀🕵️‍♂️
+Se precisar de ajuda para implementar as sugestões, só chamar! Estou aqui para te ajudar nessa jornada de aprendizado. 🚀
 
-Abraços,  
-Seu Code Buddy 🤖❤️
+Continue assim, com esse empenho e vontade de aprender! O mundo do backend Node.js e banco de dados é vasto e cheio de oportunidades para você brilhar. ✨
+
+Um forte abraço e bons códigos! 👊😊
 
 > Caso queira tirar uma dúvida específica, entre em contato com o Chapter no nosso [discord](https://discord.gg/DryuHVnz).
 
