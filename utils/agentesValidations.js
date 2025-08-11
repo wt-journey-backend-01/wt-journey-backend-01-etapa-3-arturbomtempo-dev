@@ -20,7 +20,7 @@ const newAgenteValidation = (req, res, next) => {
                 }, 'A data não pode estar no futuro'),
         }),
     });
-    
+
     validate(newAgente, req);
     next();
 };

@@ -149,7 +149,7 @@ async function filter(req, res) {
     if (casos.length === 0) {
         throw new AppError(404, 'Nenhum caso encontrado para a busca especificada');
     }
-    
+
     res.json(casos);
 }
 

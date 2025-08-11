@@ -90,7 +90,7 @@ async function getCasosByAgenteId(req, res) {
     }
 
     const casos = await casosRepository.findAll({ agente_id: agenteId });
-    
+
     res.json(casos);
 }
 
