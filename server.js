@@ -1,14 +1,13 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const swagger = require('./docs/swagger');
+const agentesRouter = require('./routes/agentesRoutes');
+const casosRouter = require('./routes/casosRoutes');
+const { errorHandler } = require('./utils/errorHandler');
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-const agentesRouter = require('./routes/agentesRoutes');
-const casosRouter = require('./routes/casosRoutes');
-const { errorHandler } = require('./utils/errorHandler');
 
 app.use(express.json());
 

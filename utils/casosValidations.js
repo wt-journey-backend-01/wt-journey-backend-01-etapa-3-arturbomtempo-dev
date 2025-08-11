@@ -20,6 +20,7 @@ const newCasoValidation = (req, res, next) => {
                 .positive({ error: 'Id inválido' }),
         }),
     });
+
     validate(newCaso, req);
     next();
 };
@@ -55,6 +56,7 @@ const updateCasoValidation = (req, res, next) => {
                 error: 'O id não pode ser atualizado',
             }),
     });
+
     validate(updateCaso, req);
     next();
 };
@@ -99,6 +101,7 @@ const partialUpdateCasoValidation = (req, res, next) => {
                 error: 'O id não pode ser atualizado',
             }),
     });
+    
     validate(updateCaso, req);
     next();
 };

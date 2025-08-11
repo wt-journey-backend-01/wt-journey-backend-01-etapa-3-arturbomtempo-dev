@@ -20,6 +20,7 @@ const newAgenteValidation = (req, res, next) => {
                 }, 'A data não pode estar no futuro'),
         }),
     });
+    
     validate(newAgente, req);
     next();
 };
@@ -53,6 +54,7 @@ const updateAgenteValidation = (req, res, next) => {
                 error: 'O id não pode ser atualizado',
             }),
     });
+
     validate(updateAgente, req);
     next();
 };
@@ -97,6 +99,7 @@ const partialUpdateAgenteValidation = (req, res, next) => {
                 error: 'O id não pode ser atualizado',
             }),
     });
+
     validate(updateAgente, req);
     next();
 };

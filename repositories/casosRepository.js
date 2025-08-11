@@ -61,8 +61,6 @@ async function filter(term) {
             .select('*')
             .where('titulo', 'ilike', `%${term}%`)
             .orWhere('descricao', 'ilike', `%${term}%`);
-
-        console.log(result);
         return result;
     } catch (error) {
         throw new AppError(500, 'Erro ao buscar casos', [error.message]);
