@@ -8,8 +8,8 @@ const swaggerOptions = {
             title: 'API do Departamento de Polícia',
             version: '1.0.0',
             contact: {
-                name: 'Matheus Alencar da Silva',
-                email: 'matheusalencar6942@gmail.com',
+                name: 'Artur Bomtempo',
+                email: 'arturbcolen@gmail.com',
             },
         },
         servers: [
