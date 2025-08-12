@@ -429,45 +429,4 @@ router.patch('/casos/:id', partialUpdateCasoValidation, casosController.updatePa
  */
 router.delete('/casos/:id', casosController.deleteCaso);
 
-/**
- * @openapi
- * components:
- *  schemas:
- *    Caso:
- *      type: object
- *      properties:
- *        id:
- *          type: integer
- *          example: 1
- *        titulo:
- *          type: string
- *          example: "Homicídio"
- *        descricao:
- *          type: string
- *          example: "Disparos foram reportados às 22:33 do dia 10/07/2007 na região do bairro União, resultando na morte da vítima, um homem de 45 anos"
- *        status:
- *          type: string
- *          enum: ["aberto", "fechado"]
- *          example: "aberto"
- *        agente_id:
- *          type: integer
- *          example: 1
- *    NovoCaso:
- *      type: object
- *      properties:
- *        titulo:
- *          type: string
- *          example: "Homicídio"
- *        descricao:
- *          type: string
- *          example: "Disparos foram reportados às 22:33 do dia 10/07/2007 na região do bairro União, resultando na morte da vítima, um homem de 45 anos"
- *        status:
- *          type: string
- *          enum: ["aberto", "fechado"]
- *          example: "aberto"
- *        agente_id:
- *          type: integer
- *          example: 1
- */
-
 module.exports = router;
