@@ -27,7 +27,7 @@ async function getAgenteById(req, res) {
     const agente = await agentesRepository.findById(id);
 
     if (!agente) {
-        throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+        throw new AppError(404, 'Agente não encontrado.');
     }
 
     res.json(agente);
@@ -43,7 +43,7 @@ async function updateAgente(req, res) {
     const agente = await agentesRepository.findById(id);
 
     if (!agente) {
-        throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+        throw new AppError(404, 'Agente não encontrado.');
     }
 
     const updatedAgente = await agentesRepository.update(id, req.body);
@@ -56,7 +56,7 @@ async function updatePartialAgente(req, res) {
     const agente = await agentesRepository.findById(id);
 
     if (!agente) {
-        throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+        throw new AppError(404, 'Agente não encontrado.');
     }
 
     const updatedAgente = await agentesRepository.updatePartial(id, req.body);
@@ -69,13 +69,13 @@ async function deleteAgente(req, res) {
     const agente = await agentesRepository.findById(id);
 
     if (!agente) {
-        throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+        throw new AppError(404, 'Agente não encontrado.');
     }
 
     const result = await agentesRepository.remove(id);
 
     if (!result) {
-        throw new AppError(500, 'Erro ao remover o agente');
+        throw new AppError(500, 'Erro ao remover agente.');
     }
 
     res.status(204).send();
@@ -86,7 +86,7 @@ async function getCasosByAgenteId(req, res) {
     const agente = await agentesRepository.findById(agenteId);
 
     if (!agente) {
-        throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+        throw new AppError(404, 'Agente não encontrado.');
     }
 
     const casos = await casosRepository.findAll({ agente_id: agenteId });

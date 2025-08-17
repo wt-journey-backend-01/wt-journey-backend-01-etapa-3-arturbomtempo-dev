@@ -4,20 +4,20 @@ const { validate } = require('./errorHandler');
 const newCasoValidation = (req, res, next) => {
     const newCaso = z.object({
         body: z.object({
-            titulo: z.string({ error: 'O título é obrigatório' }).min(1, 'O título é obrigatório'),
+            titulo: z.string({ error: 'Título obrigatório.' }).min(1, 'Título obrigatório.'),
             descricao: z
-                .string({ error: 'A descrição é obrigatória' })
-                .min(1, 'A descrição é obrigatória'),
+                .string({ error: 'Descrição obrigatória.' })
+                .min(1, 'Descrição obrigatória.'),
             status: z.enum(['aberto', 'solucionado'], {
                 error: (issue) =>
                     issue.input === undefined
-                        ? 'O status é obrigatório'
-                        : 'O status deve ser "aberto" ou "solucionado"',
+                        ? 'Status obrigatório.'
+                        : 'Status deve ser "aberto" ou "solucionado".',
             }),
             agente_id: z.coerce
-                .number({ error: 'Id inválido' })
-                .int({ error: 'Id inválido' })
-                .positive({ error: 'Id inválido' }),
+                .number({ error: 'Id inválido.' })
+                .int({ error: 'Id inválido.' })
+                .positive({ error: 'Id inválido.' }),
         }),
     });
 
@@ -29,31 +29,29 @@ const updateCasoValidation = (req, res, next) => {
     const updateCaso = z.object({
         params: z.object({
             id: z.coerce
-                .number({ error: 'Id inválido' })
-                .int({ error: 'Id inválido' })
-                .positive({ error: 'Id inválido' }),
+                .number({ error: 'Id inválido.' })
+                .int({ error: 'Id inválido.' })
+                .positive({ error: 'Id inválido.' }),
         }),
         body: z
             .looseObject({
-                titulo: z
-                    .string({ error: 'O título é obrigatório' })
-                    .min(1, 'O título é obrigatório'),
+                titulo: z.string({ error: 'Título obrigatório.' }).min(1, 'Título obrigatório.'),
                 descricao: z
-                    .string({ error: 'A descrição é obrigatória' })
-                    .min(1, 'A descrição é obrigatória'),
+                    .string({ error: 'Descrição obrigatória.' })
+                    .min(1, 'Descrição obrigatória.'),
                 status: z.enum(['aberto', 'solucionado'], {
                     error: (issue) =>
                         issue.input === undefined
-                            ? 'O status é obrigatório'
-                            : 'O status deve ser "aberto" ou "solucionado"',
+                            ? 'Status obrigatório.'
+                            : 'Status deve ser "aberto" ou "solucionado".',
                 }),
                 agente_id: z.coerce
-                    .number({ error: 'Id inválido' })
-                    .int({ error: 'Id inválido' })
-                    .positive({ error: 'Id inválido' }),
+                    .number({ error: 'Id inválido.' })
+                    .int({ error: 'Id inválido.' })
+                    .positive({ error: 'Id inválido.' }),
             })
             .refine((data) => data.id === undefined, {
-                error: 'O id não pode ser atualizado',
+                error: 'Id não pode ser atualizado.',
             }),
     });
 
@@ -65,40 +63,38 @@ const partialUpdateCasoValidation = (req, res, next) => {
     const updateCaso = z.object({
         params: z.object({
             id: z.coerce
-                .number({ error: 'Id inválido' })
-                .int({ error: 'Id inválido' })
-                .positive({ error: 'Id inválido' }),
+                .number({ error: 'Id inválido.' })
+                .int({ error: 'Id inválido.' })
+                .positive({ error: 'Id inválido.' }),
         }),
         body: z
             .strictObject(
                 {
-                    titulo: z.optional(z.string().min(1, 'O título não pode ser vazio')),
-                    descricao: z.optional(z.string().min(1, 'A descrição não pode ser vazia')),
+                    titulo: z.optional(z.string().min(1, 'Título não pode ser vazio.')),
+                    descricao: z.optional(z.string().min(1, 'Descrição não pode ser vazia.')),
                     status: z.optional(
                         z.enum(['aberto', 'solucionado'], {
-                            error: 'O status deve ser "aberto" ou "solucionado"',
+                            error: 'Status deve ser "aberto" ou "solucionado".',
                         })
                     ),
                     agente_id: z.optional(
                         z.coerce
-                            .number({ error: 'Id inválido' })
-                            .int({ error: 'Id inválido' })
-                            .positive({ error: 'Id inválido' })
+                            .number({ error: 'Id inválido.' })
+                            .int({ error: 'Id inválido.' })
+                            .positive({ error: 'Id inválido.' })
                     ),
                 },
                 {
                     error: (err) => {
                         if (err.keys.length > 0) {
-                            return `Alguns campos não são válidos para a entidade caso: ${err.keys.join(
-                                ', '
-                            )}`;
+                            return `Campos inválidos para a entidade caso: ${err.keys.join(', ')}.`;
                         }
                         return err;
                     },
                 }
             )
             .refine((data) => data.id === undefined, {
-                error: 'O id não pode ser atualizado',
+                error: 'Id não pode ser atualizado.',
             }),
     });
 

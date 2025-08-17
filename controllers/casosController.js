@@ -24,13 +24,13 @@ async function getCasosById(req, res) {
     const id = Number(req.params.id);
 
     if (!id || !Number.isInteger(id)) {
-        throw new AppError(404, 'Id inválido');
+        throw new AppError(404, 'Id inválido.');
     }
 
     const caso = await casosRepository.findById(id);
 
     if (!caso) {
-        throw new AppError(404, 'Nenhum caso encontrado para o id especificado');
+        throw new AppError(404, 'Caso não encontrado.');
     }
 
     res.json(caso);
@@ -43,10 +43,10 @@ async function createCaso(req, res) {
         const agente = await agentesRepository.findById(agenteId);
 
         if (!agente) {
-            throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+            throw new AppError(404, 'Agente não encontrado.');
         }
     } else {
-        throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+        throw new AppError(404, 'Agente não encontrado.');
     }
 
     const novoCaso = await casosRepository.create(req.body);
@@ -62,16 +62,16 @@ async function updateCaso(req, res) {
         const agente = await agentesRepository.findById(agenteId);
 
         if (!agente) {
-            throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+            throw new AppError(404, 'Agente não encontrado.');
         }
     } else {
-        throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+        throw new AppError(404, 'Agente não encontrado.');
     }
 
     const caso = await casosRepository.findById(id);
 
     if (!caso) {
-        throw new AppError(404, 'Nenhum caso encontrado para o id especificado');
+        throw new AppError(404, 'Caso não encontrado.');
     }
 
     const updatedCaso = await casosRepository.update(id, req.body);
@@ -83,7 +83,7 @@ async function updatePartialCaso(req, res) {
     const id = req.params.id;
 
     if (req.body.id) {
-        throw new AppError(400, 'Parâmetros inválidos', ['O id não pode ser atualizado']);
+        throw new AppError(400, 'Id não pode ser atualizado.');
     }
 
     const agenteId = req.body.agente_id;
@@ -92,14 +92,14 @@ async function updatePartialCaso(req, res) {
         const agente = await agentesRepository.findById(agenteId);
 
         if (!agente) {
-            throw new AppError(404, 'Nenhum agente encontrado para o id especificado');
+            throw new AppError(404, 'Agente não encontrado.');
         }
     }
 
     const caso = await casosRepository.findById(id);
 
     if (!caso) {
-        throw new AppError(404, 'Nenhum caso encontrado para o id especificado');
+        throw new AppError(404, 'Caso não encontrado.');
     }
 
     const updatedCaso = await casosRepository.updatePartial(id, req.body);
@@ -112,13 +112,13 @@ async function deleteCaso(req, res) {
     const caso = await casosRepository.findById(id);
 
     if (!caso) {
-        throw new AppError(404, 'Nenhum caso encontrado para o id especificado');
+        throw new AppError(404, 'Caso não encontrado.');
     }
 
     const result = await casosRepository.remove(id);
 
     if (!result) {
-        throw new AppError(500, 'Erro ao remover o agente');
+        throw new AppError(500, 'Erro ao remover o caso.');
     }
 
     res.status(204).send();
@@ -129,14 +129,14 @@ async function getAgenteByCasoId(req, res) {
     const caso = await casosRepository.findById(casoId);
 
     if (!caso) {
-        throw new AppError(404, 'Nenhum caso encontrado para o id especificado');
+        throw new AppError(404, 'Caso não encontrado.');
     }
 
     const agenteId = caso.agente_id;
     const agente = await agentesRepository.findById(agenteId);
 
     if (!agente) {
-        throw new AppError(404, 'Nenhum agente encontrado para o agente_id especificado');
+        throw new AppError(404, 'Agente não encontrado.');
     }
 
     res.status(200).json(agente);
@@ -147,7 +147,7 @@ async function filter(req, res) {
     const casos = await casosRepository.filter(term);
 
     if (casos.length === 0) {
-        throw new AppError(404, 'Nenhum caso encontrado para a busca especificada');
+        throw new AppError(404, 'Nenhum caso encontrado.');
     }
 
     res.json(casos);

@@ -6,7 +6,7 @@ async function findAll(filter = {}) {
         const result = await db('casos').select('*').where(filter);
         return result;
     } catch (error) {
-        throw new AppError(500, 'Erro ao buscar casos', [error.message]);
+        throw new AppError(500, 'Erro ao buscar casos.', [error.message]);
     }
 }
 
@@ -15,7 +15,7 @@ async function findById(id) {
         const result = await db('casos').select('*').where({ id }).first();
         return result;
     } catch (error) {
-        throw new AppError(500, 'Erro ao buscar caso', [error.message]);
+        throw new AppError(500, 'Erro ao buscar caso.', [error.message]);
     }
 }
 
@@ -24,7 +24,7 @@ async function create(caso) {
         const [newCaso] = await db('casos').insert(caso).returning('*');
         return newCaso;
     } catch (error) {
-        throw new AppError(500, 'Erro ao criar caso', [error.message]);
+        throw new AppError(500, 'Erro ao criar caso.', [error.message]);
     }
 }
 
@@ -33,7 +33,7 @@ async function update(id, updatedCaso) {
         const [caso] = await db('casos').update(updatedCaso).where({ id }).returning('*');
         return caso;
     } catch (error) {
-        throw new AppError(500, 'Erro ao atualizar caso', [error.message]);
+        throw new AppError(500, 'Erro ao atualizar caso.', [error.message]);
     }
 }
 
@@ -42,7 +42,7 @@ async function updatePartial(id, partialCaso) {
         const [caso] = await db('casos').update(partialCaso).where({ id }).returning('*');
         return caso;
     } catch (error) {
-        throw new AppError(500, 'Erro ao atualizar caso', [error.message]);
+        throw new AppError(500, 'Erro ao atualizar caso.', [error.message]);
     }
 }
 
@@ -51,7 +51,7 @@ async function remove(id) {
         const rows = await db('casos').del().where({ id });
         return !!rows;
     } catch (error) {
-        throw new AppError(500, 'Erro ao excluir caso', [error.message]);
+        throw new AppError(500, 'Erro ao excluir caso.', [error.message]);
     }
 }
 
@@ -63,7 +63,7 @@ async function filter(term) {
             .orWhere('descricao', 'ilike', `%${term}%`);
         return result;
     } catch (error) {
-        throw new AppError(500, 'Erro ao buscar casos', [error.message]);
+        throw new AppError(500, 'Erro ao buscar casos.', [error.message]);
     }
 }
 

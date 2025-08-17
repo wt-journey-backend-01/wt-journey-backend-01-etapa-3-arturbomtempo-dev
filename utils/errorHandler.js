@@ -1,5 +1,5 @@
 class AppError extends Error {
-    constructor(statusCode, message, errors = []) {
+    constructor(statusCode, message = 'Ocorreu um erro.', errors = []) {
         super(message);
         this.statusCode = statusCode;
         this.errors = errors.map((err) => err.msg || err);
@@ -11,13 +11,13 @@ const validate = (schema, req) => {
 
     if (!result.success) {
         const errors = JSON.parse(result.error).map((err) => err.message);
-        throw new AppError(400, 'Parâmetros inválidos', errors || []);
+        throw new AppError(400, 'Parâmetros inválidos.', errors || []);
     }
 };
 
 const errorHandler = (err, req, res, next) => {
     const statusCode = err.statusCode || 500;
-    const message = err.message || 'Erro interno no servidor';
+    const message = err.message || 'Erro interno no servidor.';
     const errors = err.errors || [];
 
     res.status(statusCode).json({
